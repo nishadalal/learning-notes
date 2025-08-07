@@ -1,15 +1,15 @@
 {
-  "name": "@jackyzha0/quartz",
-  "description": "🌱 publish your digital garden and notes as a website",
+  "name": "learning-notes",
+  "description": "Nisha Dalal's learning vault and blog",
   "private": true,
-  "version": "4.5.1",
+  "version": "1.0.0",
   "type": "module",
-  "author": "jackyzha0 <j.zhao2k19@gmail.com>",
+  "author": "Nisha Dalal <nisha.dalal01@gmail.com>",
   "license": "MIT",
-  "homepage": "https://quartz.jzhao.xyz",
+  "homepage": "https://nishadalal.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jackyzha0/quartz.git"
+    "url": "https://github.com/nishadalal/learning-notes.git"
   },
   "scripts": {
     "quartz": "./quartz/bootstrap-cli.mjs",
