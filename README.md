@@ -20,13 +20,11 @@ As the world continues to change, we must learn continually. This vault follows 
 This layout supports **Zettelkasten-style note-taking**, **project-based learning**, and **public publishing**:
 
 ```
-📁 00 Meta/              → Study plan, templates, weekly roadmap  
-📁 01 Concepts/          → Notes on LLMs, agents, RAG, embeddings, etc.  
-📁 02 Facts/             → Tools, model comparisons, token limits  
-📁 03 Procedures/        → Step-by-step guides for chaining, PDFs, UIs  
-📁 04 Capstone Project/  → Design docs, architecture, app iterations  
-📁 05 Reflections/       → Weekly reflections (private or summarized)  
-📁 blog/                 → Quartz-ready blog posts  
+📁 Meta/              → Study plan, templates, weekly roadmap  
+📁 Concepts/          → Notes on LLMs, agents, RAG, embeddings, etc. 
+📁 Projects/          → Project specific learnings  
+📁 Reflections/       → Weekly reflections (private or summarized)  
+📁 Blog/              → Quartz-ready blog posts  
 ```
 
 ---
