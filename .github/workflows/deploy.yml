@@ -23,22 +23,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          # Quartz generally works fine on LTS; use 20 unless you *need* 22
           node-version: 20
+          cache: npm
 
-      - name: Install dependencies
+      # Prefer lockfile if present (reproducible); otherwise do a regular install
+      - name: Install dependencies (ci)
+        if: hashFiles('package-lock.json') != ''
         run: npm ci
+
+      - name: Install dependencies (install)
+        if: hashFiles('package-lock.json') == ''
+        run: npm install
 
       - name: Build Quartz site
         run: npm run quartz build
-        # Ensure this outputs the static site to ./public
+        # If your output isn't ./public, change the upload path below
 
-      # ⬇️ This is the key: upload a **Pages artifact**
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public            # your built site folder
-          # name defaults to "github-pages" which is what deploy-pages expects
+          path: ./public
 
   deploy:
     needs: build
@@ -46,14 +50,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      # ⬇️ No download/extract needed. Deploy reads the Pages artifact automatically.
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          # optional tuning:
-          timeout: 1200000           # 20 min
+          timeout: 1200000          # 20 min
           error_count: 20
           reporting_interval: 5000
