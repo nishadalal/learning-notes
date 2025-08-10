@@ -2,8 +2,7 @@ name: Deploy Quartz to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -24,22 +23,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
+          cache: npm
 
-      - name: Install dependencies
+      # Prefer lockfile if present (reproducible); otherwise do a regular install
+      - name: Install dependencies (ci)
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+
+      - name: Install dependencies (install)
+        if: hashFiles('package-lock.json') == ''
         run: npm install
 
       - name: Build Quartz site
         run: npm run quartz build
+        # If your output isn't ./public, change the upload path below
 
-      - name: Archive site output
-        run: tar -czf site.tar.gz -C public .
-
-      - name: Upload artifact (using v4)
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
-          path: site.tar.gz
+          path: ./public
 
   deploy:
     needs: build
@@ -47,20 +50,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: ./artifact
-
-      - name: Extract site files
-        run: |
-          mkdir -p public
-          tar -xzf ./artifact/site.tar.gz -C public
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
+        with:
+          timeout: 1200000          # 20 min
+          error_count: 20
+          reporting_interval: 5000
