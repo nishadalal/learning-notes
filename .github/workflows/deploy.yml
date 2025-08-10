@@ -2,8 +2,7 @@ name: Deploy Quartz to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -24,22 +23,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Quartz generally works fine on LTS; use 20 unless you *need* 22
+          node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Quartz site
         run: npm run quartz build
+        # Ensure this outputs the static site to ./public
 
-      - name: Archive site output
-        run: tar -czf site.tar.gz -C public .
-
-      - name: Upload artifact (using v4)
-        uses: actions/upload-artifact@v4
+      # ⬇️ This is the key: upload a **Pages artifact**
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
-          path: site.tar.gz
+          path: ./public            # your built site folder
+          # name defaults to "github-pages" which is what deploy-pages expects
 
   deploy:
     needs: build
@@ -49,18 +48,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: ./artifact
-
-      - name: Extract site files
-        run: |
-          mkdir -p public
-          tar -xzf ./artifact/site.tar.gz -C public
-
+      # ⬇️ No download/extract needed. Deploy reads the Pages artifact automatically.
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
+        with:
+          # optional tuning:
+          timeout: 1200000           # 20 min
+          error_count: 20
+          reporting_interval: 5000
